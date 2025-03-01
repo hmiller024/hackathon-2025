@@ -8,4 +8,5 @@ public class TrackedWebsite
     public string LastHash { get; set; } = string.Empty;
     public DateTime LastChecked { get; set; } = DateTime.UtcNow;
     public bool ContentChanged { get; set; }
+    public string Differences { get; set; } = string.Empty;
 }
