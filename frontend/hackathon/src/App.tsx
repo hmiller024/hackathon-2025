@@ -211,7 +211,7 @@ const App: React.FC = () => {
 
     try {
       setSaving(true);
-      const savedSite = await websiteApi.addWebsite(site.url);
+      const savedSite = await websiteApi.addWebsite(site.url || '', site.name || '');
 
       // Replace the temporary site with the saved one
       setSites(prevSites =>

@@ -8,11 +8,33 @@ export interface TrackedWebsite {
     lastHash: string;
     name?: string;
     hasChanges?: boolean;
+    contentChanged?: boolean;
+    differences?: string;
 }
 
 export interface WebsiteRequest {
     url: string;
     content: string;
+}
+
+export interface ChatRequest {
+    websiteName: string;
+    websiteUrl: string;
+}
+
+export interface ChangeAnalysisRequest extends ChatRequest {
+    previousHash: string;
+    currentHash: string;
+    differences: string;
+}
+
+export interface ChatResponse {
+    message: string;
+}
+
+export interface WebsiteWithChatResponse {
+    website: TrackedWebsite;
+    chatAnalysis: string;
 }
 
 // Base API URL - should be configured based on your environment
@@ -47,16 +69,11 @@ class WebsiteApiService {
     }
 
     // Add a new website
-    async addWebsite(url: string): Promise<TrackedWebsite> {
+    async addWebsite(url: string, name: string): Promise<TrackedWebsite> {
         try {
-            // Fetch the content of the URL to get initial hash
-            // In a real application, this would likely be handled by the backend
-            // This is a simplification for demonstration purposes
-            const content = await this.fetchWebsiteContent(url);
-
             const request: WebsiteRequest = {
                 url,
-                content,
+                content: name || this.extractNameFromUrl(url),
             };
 
             const response = await axios.post<WebsiteRequest>(
@@ -77,12 +94,84 @@ class WebsiteApiService {
                 id: -1, // Placeholder ID
                 url: response.data.url,
                 lastChecked: new Date().toISOString(),
-                lastHash: response.data.content,
-                name: this.extractNameFromUrl(response.data.url),
+                lastHash: '', // We don't have this info from the response
+                name: name || this.extractNameFromUrl(response.data.url),
                 hasChanges: false,
             };
         } catch (error) {
             console.error("Error adding website:", error);
+            throw error;
+        }
+    }
+
+    // Add a new website with AI chat analysis
+    async addWebsiteWithChat(url: string, name: string): Promise<WebsiteWithChatResponse> {
+        try {
+            const request: WebsiteRequest = {
+                url,
+                content: name || this.extractNameFromUrl(url),
+            };
+
+            const response = await axios.post<WebsiteWithChatResponse>(
+                `${API_BASE_URL}/Website/addWebsiteWithChat`,
+                request
+            );
+
+            return {
+                website: this.transformWebsiteData(response.data.website),
+                chatAnalysis: response.data.chatAnalysis
+            };
+        } catch (error) {
+            console.error("Error adding website with chat:", error);
+            throw error;
+        }
+    }
+
+    // Get AI analysis for a website
+    async getChatAnalysis(websiteName: string, websiteUrl: string): Promise<ChatResponse> {
+        try {
+            const request: ChatRequest = {
+                websiteName,
+                websiteUrl
+            };
+
+            const response = await axios.post<ChatResponse>(
+                `${API_BASE_URL}/Chat/getResponse`,
+                request
+            );
+
+            return response.data;
+        } catch (error) {
+            console.error("Error getting chat analysis:", error);
+            throw error;
+        }
+    }
+
+    // Analyze changes between website versions
+    async analyzeChanges(
+        websiteName: string,
+        websiteUrl: string,
+        previousHash: string,
+        currentHash: string,
+        differences: string
+    ): Promise<ChatResponse> {
+        try {
+            const request: ChangeAnalysisRequest = {
+                websiteName,
+                websiteUrl,
+                previousHash,
+                currentHash,
+                differences
+            };
+
+            const response = await axios.post<ChatResponse>(
+                `${API_BASE_URL}/Chat/analyzeChanges`,
+                request
+            );
+
+            return response.data;
+        } catch (error) {
+            console.error("Error analyzing website changes:", error);
             throw error;
         }
     }
@@ -105,32 +194,14 @@ class WebsiteApiService {
     // Helper to check for website changes
     async checkForChanges(): Promise<TrackedWebsite[]> {
         try {
-            // In a real implementation, you'd have an endpoint for checking changes
-            const response = await axios.post<TrackedWebsite[]>(
-                `${API_BASE_URL}/Website/checkChanges`
+            // Use the existing allWebsites endpoint which already checks for changes
+            const response = await axios.get<TrackedWebsite[]>(
+                `${API_BASE_URL}/Website/allWebsites`
             );
             return response.data.map(website => this.transformWebsiteData(website));
         } catch (error) {
             console.error("Error checking for changes:", error);
-            // Fallback: just return current websites
-            return this.getAllWebsites();
-        }
-    }
-
-    // Helper method to fetch website content
-    private async fetchWebsiteContent(url: string): Promise<string> {
-        try {
-            // In a real application, this should be done server-side
-            // This is a simplified approach for demo purposes
-            const response = await axios.get(url, {
-                headers: {
-                    'Accept': 'text/html'
-                }
-            });
-            return response.data.toString();
-        } catch (error) {
-            console.error("Error fetching website content:", error);
-            return "Failed to fetch content";
+            throw error;
         }
     }
 
@@ -140,8 +211,9 @@ class WebsiteApiService {
             ...website,
             // Add name property if it doesn't exist (derived from URL)
             name: website.name || this.extractNameFromUrl(website.url),
-            // Add hasChanges property if it doesn't exist
-            hasChanges: website.hasChanges !== undefined ? website.hasChanges : false,
+            // Map contentChanged to hasChanges for consistency with frontend
+            hasChanges: website.hasChanges !== undefined ? website.hasChanges :
+                (website.contentChanged !== undefined ? website.contentChanged : false),
         };
     }
 
