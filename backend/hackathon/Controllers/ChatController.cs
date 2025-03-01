@@ -16,15 +16,18 @@ namespace Backend.Controllers
         private readonly ILogger<ChatController> _logger;
         private readonly IConfiguration _configuration;
         private readonly HttpClient _httpClient;
+        private readonly AppDbContext _context;
 
         public ChatController(
             ILogger<ChatController> logger,
             IConfiguration configuration,
-            HttpClient httpClient)
+            HttpClient httpClient,
+            AppDbContext context)
         {
             _logger = logger;
             _configuration = configuration;
             _httpClient = httpClient;
+            _context = context;
         }
 
         [HttpPost("getResponse")]
