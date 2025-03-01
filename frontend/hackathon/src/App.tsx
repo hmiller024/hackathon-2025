@@ -22,7 +22,7 @@ const SiteCard: React.FC<{
         </label>
         <input
           type="text"
-          value={site.name || ''}
+          value={site.name || ""}
           onChange={(e) => onNameChange(site.id, e.target.value)}
           className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Enter site name"
@@ -61,8 +61,12 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
   if (!site) {
     return (
       <div className="text-center p-6">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">Website Monitor</h2>
-        <p className="text-gray-600 mb-6">Hover over a site from the list to view details</p>
+        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+          Website Monitor
+        </h2>
+        <p className="text-gray-600 mb-6">
+          Hover over a site from the list to view details
+        </p>
         <div className="p-8 bg-white rounded-lg shadow-md">
           <p className="text-gray-500">No site selected</p>
         </div>
@@ -72,12 +76,19 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Website Monitor</h2>
+      <h2 className="text-2xl font-semibold text-gray-700 mb-4">
+        Website Monitor
+      </h2>
       <div className="p-6 bg-white rounded-lg shadow-md">
         <h3 className="text-xl font-bold mb-4">{site.name}</h3>
         <div className="mb-4">
           <p className="text-gray-700 font-medium">URL:</p>
-          <a href={site.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+          <a
+            href={site.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
             {site.url}
           </a>
         </div>
@@ -93,8 +104,13 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
             size={24}
             className="mr-2"
           />
-          <span className={`font-medium ${site.hasChanges ? "text-red-600" : "text-gray-600"}`}>
-            {site.hasChanges ? "Changes have been detected on this site" : "No changes detected on this site"}
+          <span
+            className={`font-medium ${site.hasChanges ? "text-red-600" : "text-gray-600"
+              }`}
+          >
+            {site.hasChanges
+              ? "Changes have been detected on this site"
+              : "No changes detected on this site"}
           </span>
         </div>
       </div>
@@ -118,8 +134,8 @@ const App: React.FC = () => {
         setSites(data);
         setError(null);
       } catch (err) {
-        console.error('Failed to fetch websites:', err);
-        setError('Failed to load websites. Please try again later.');
+        console.error("Failed to fetch websites:", err);
+        setError("Failed to load websites. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -129,15 +145,15 @@ const App: React.FC = () => {
   }, []);
 
   const handleNameChange = (id: number, newName: string) => {
-    setSites(sites.map(site =>
-      site.id === id ? { ...site, name: newName } : site
-    ));
+    setSites(
+      sites.map((site) => (site.id === id ? { ...site, name: newName } : site))
+    );
   };
 
   const handleUrlChange = (id: number, newUrl: string) => {
-    setSites(sites.map(site =>
-      site.id === id ? { ...site, url: newUrl } : site
-    ));
+    setSites(
+      sites.map((site) => (site.id === id ? { ...site, url: newUrl } : site))
+    );
   };
 
   const checkForChanges = async () => {
@@ -147,8 +163,8 @@ const App: React.FC = () => {
       setSites(updatedSites);
       setError(null);
     } catch (err) {
-      console.error('Failed to check for changes:', err);
-      setError('Failed to check for changes. Please try again later.');
+      console.error("Failed to check for changes:", err);
+      setError("Failed to check for changes. Please try again later.");
     } finally {
       setLoading(false);
     }
@@ -211,7 +227,7 @@ const App: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-2">
-            {sites.map(site => (
+            {sites.map((site) => (
               <SiteCard
                 key={site.id}
                 site={site}
