@@ -34,6 +34,15 @@ namespace Backend.Controllers
             return Ok(website);
         }
 
+        [HttpGet("allWebsites")]
+        public async Task<IActionResult> GetAllWebsites()
+        {
+            _logger.LogInformation("GETTING THE FUCKING WEBSITES BAYBE");
+
+            var websites = await _context.TrackedWebsites.ToListAsync();
+            return Ok(websites);
+        }
+
         [HttpPost("addWebsite")]
         public async Task<IActionResult> AddWebsite(WebsiteRequest request)
         {

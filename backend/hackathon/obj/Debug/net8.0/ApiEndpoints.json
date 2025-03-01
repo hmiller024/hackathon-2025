@@ -17,6 +17,16 @@
   },
   {
     "ContainingType": "Backend.Controllers.WebsiteController",
+    "Method": "GetAllWebsites",
+    "RelativePath": "api/Website/allWebsites",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Backend.Controllers.WebsiteController",
     "Method": "GetWebsiteFromId",
     "RelativePath": "api/Website/website",
     "HttpMethod": "GET",
