@@ -16,7 +16,7 @@ export interface WebsiteRequest {
 }
 
 // Base API URL - should be configured based on your environment
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = 'http://localhost:5173/api/';
 
 // API service class
 class WebsiteApiService {
@@ -34,7 +34,8 @@ class WebsiteApiService {
     // Get all websites
     async getAllWebsites(): Promise<TrackedWebsite[]> {
         try {
-            const response = await axios.get<TrackedWebsite[]>(`${API_BASE_URL}/Website/allWebsites`);
+            const response = await axios.get<TrackedWebsite[]>(`${API_BASE_URL}/WebsiteController/allWebsites`);
+            console.log(response.data);
             return response.data.map(website => this.transformWebsiteData(website));
         } catch (error) {
             console.error('Error fetching all websites:', error);
