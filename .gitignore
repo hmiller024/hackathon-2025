@@ -1,1 +1,10 @@
 .vs/
+/backend/hackathon/bin/
+/backend/hackathon/obj/
+/backend/hackathon/websites.db-shm
+/backend/hackathon/websites.db-wal
+
+*.db
+
+/backend/hackathon/appsettings.json
+\backend\hackathon\appsettings.json

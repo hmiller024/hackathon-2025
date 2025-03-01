@@ -1,5 +1,37 @@
 [
   {
+    "ContainingType": "Backend.Controllers.ChatController",
+    "Method": "AnalyzeChanges",
+    "RelativePath": "api/Chat/analyzeChanges",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Backend.Controllers.ChatController\u002BChangeAnalysisRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Backend.Controllers.ChatController",
+    "Method": "GetChatResponse",
+    "RelativePath": "api/Chat/getResponse",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "Backend.Controllers.ChatController\u002BChatRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Backend.Controllers.WebsiteController",
     "Method": "AddWebsite",
     "RelativePath": "api/Website/addWebsite",
@@ -20,6 +52,16 @@
     "Method": "GetAllWebsites",
     "RelativePath": "api/Website/allWebsites",
     "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Backend.Controllers.WebsiteController",
+    "Method": "NukeDb",
+    "RelativePath": "api/Website/nuke",
+    "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
