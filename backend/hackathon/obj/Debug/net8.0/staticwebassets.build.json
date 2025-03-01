@@ -1,11 +1,12 @@
 {
   "Version": 1,
-  "Hash": "Vqb1S/sJN9jBmv8SKXVUAxuhSUiIFdU2oqesdwqRy9k=",
+  "Hash": "tDWo9KO4zfkwCKHDFZdjoV1d5AelmKg8RwDeg+LlRJ0=",
   "Source": "hackathon",
   "BasePath": "_content/hackathon",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
   "DiscoveryPatterns": [],
-  "Assets": []
+  "Assets": [],
+  "Endpoints": []
 }
