@@ -110,6 +110,20 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
 
   const isNewSite = site.id < 0;
 
+  const handleGetChatDetails = async () => {
+    try {
+      const chatDetails = await websiteApi.analyzeChanges(
+        site.name || "",
+        site.url,
+        site.lastHash
+      );
+      console.log("Chat details:", chatDetails);
+      // Handle chat details display or state update here
+    } catch (error) {
+      console.error("Failed to fetch chat details:", error);
+    }
+  };
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4 text-white">Website Monitor</h2>
@@ -156,6 +170,12 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
                   : "No changes detected on this site"}
               </span>
             </div>
+            <button
+              onClick={handleGetChatDetails}
+              className="mt-4 p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              Get Chat Details
+            </button>
           </>
         )}
         {isNewSite && (

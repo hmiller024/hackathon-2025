@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OpenAI;
@@ -37,6 +38,9 @@ namespace Backend.Controllers
             {
                 _logger.LogInformation($"Processing chat request for website: {request.WebsiteName}, URL: {request.WebsiteUrl}");
 
+                var trackedWebsite = await _context.TrackedWebsites
+                    .FirstOrDefaultAsync(w => w.Name == request.WebsiteName && w.Url == request.WebsiteUrl);
+
                 // Get website context
                 string websiteContextPrompt = GenerateWebsiteContextPrompt(request);
 
@@ -71,16 +75,16 @@ namespace Backend.Controllers
 
                 // Build a prompt that includes previous content (lastHash) and new content
                 string changeAnalysisPrompt = GenerateChangeAnalysisPrompt(request);
-
+                _logger.LogInformation("FUCK");
                 // Initialize OpenAI client
                 ChatClient client = new(model: "gpt-4o-mini", apiKey: Environment.GetEnvironmentVariable("OPENAI_API_KEY"));
-
+                _logger.LogInformation("FUCK2");
                 // Create chat completion with the analysis prompt
                 ChatCompletion completion = client.CompleteChat(changeAnalysisPrompt);
-
+                _logger.LogInformation("FUCK3");
                 // Get response from OpenAI
                 var response = completion.Content[0].Text;
-
+                _logger.LogInformation("FUCK4");
                 // Return the response
                 return Ok(new ChatResponse
                 {
@@ -105,8 +109,6 @@ namespace Backend.Controllers
 
 Website: {request.WebsiteName} ({request.WebsiteUrl})
 
-Previous Content Hash: {request.PreviousHash}
-Current Content Hash: {request.CurrentHash}
 Detected Differences: {request.Differences}
 
 Please analyze these changes and provide:
@@ -126,8 +128,6 @@ Keep your response clear, concise, and focused on the most important changes.";
 
         public class ChangeAnalysisRequest : ChatRequest
         {
-            public string PreviousHash { get; set; }
-            public string CurrentHash { get; set; }
             public string Differences { get; set; }
         }
 
