@@ -8,12 +8,30 @@
     ".NETCoreApp,Version=v8.0": {
       "hackathon/1.0.0": {
         "dependencies": {
+          "DiffPlex": "1.7.2",
+          "HtmlAgilityPack": "1.11.74",
           "Microsoft.EntityFrameworkCore.Design": "9.0.2",
           "Microsoft.EntityFrameworkCore.Sqlite": "9.0.2",
           "Swashbuckle.AspNetCore": "6.4.0"
         },
         "runtime": {
           "hackathon.dll": {}
+        }
+      },
+      "DiffPlex/1.7.2": {
+        "runtime": {
+          "lib/net6.0/DiffPlex.dll": {
+            "assemblyVersion": "1.7.2.0",
+            "fileVersion": "1.7.2.0"
+          }
+        }
+      },
+      "HtmlAgilityPack/1.11.74": {
+        "runtime": {
+          "lib/netstandard2.0/HtmlAgilityPack.dll": {
+            "assemblyVersion": "1.11.74.0",
+            "fileVersion": "1.11.74.0"
+          }
         }
       },
       "Humanizer.Core/2.14.1": {
@@ -863,6 +881,20 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "DiffPlex/1.7.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qJEjdxEDBWSFZGB8paBB9HDeJXHGlHlOXeGX3kbTuXWuOsgv2iSAEOOzo5V1/B39Vcxr9IVVrNKewRcX+rsn4g==",
+      "path": "diffplex/1.7.2",
+      "hashPath": "diffplex.1.7.2.nupkg.sha512"
+    },
+    "HtmlAgilityPack/1.11.74": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-q0wRGbegtr4sZXjCNoV3OeRLTOcTNJQKiO9etNVSKPoTo33unmSK8Ahg36C4jIg/Hd3aw8YnTQjtKpBy+wlOpg==",
+      "path": "htmlagilitypack/1.11.74",
+      "hashPath": "htmlagilitypack.1.11.74.nupkg.sha512"
     },
     "Humanizer.Core/2.14.1": {
       "type": "package",
