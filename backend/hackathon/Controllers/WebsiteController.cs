@@ -12,7 +12,7 @@ namespace Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class WebsiteController: ControllerBase
+    public class WebsiteController : ControllerBase
     {
         private readonly ILogger<WebsiteController> _logger;
         private readonly AppDbContext _context;
@@ -27,7 +27,8 @@ namespace Backend.Controllers
 
 
         [HttpGet("website")]
-        public async Task<IActionResult> GetWebsiteFromId(int id) {
+        public async Task<IActionResult> GetWebsiteFromId(int id)
+        {
             _logger.LogInformation("KYS");
             var website = await _context.TrackedWebsites.FindAsync(id);
 
@@ -46,16 +47,41 @@ namespace Backend.Controllers
         [HttpPost("addWebsite")]
         public async Task<IActionResult> AddWebsite(WebsiteRequest request)
         {
-            TrackedWebsite website = new TrackedWebsite
+            try
             {
-                Url = request.Url,
-                LastChecked = DateTime.UtcNow,
-                LastHash = request.Content
-            };
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.GetAsync(request.Url);
 
-            _context.TrackedWebsites.Add(website);
-            await _context.SaveChangesAsync();  
-            return Ok(request);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string htmlContent = await response.Content.ReadAsStringAsync();
+
+                        TrackedWebsite website = new TrackedWebsite
+                        {
+                            Url = request.Url,
+                            LastChecked = DateTime.UtcNow,
+                            Name = request.Content,
+                            LastHash = htmlContent
+                        };
+                        _context.TrackedWebsites.Add(website);
+                        await _context.SaveChangesAsync();
+
+                        return Ok(request);
+                    }
+                    else
+                    {
+                        return BadRequest("Failed to fetch the website content.");
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                // Handle any errors that occur during the HTTP request
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+
         }
     }
 
