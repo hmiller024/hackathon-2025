@@ -20,80 +20,90 @@ const SiteCard: React.FC<{
   onDelete,
   isSaving,
 }) => {
-  const isNewSite = site.id < 0; // Negative IDs are temporary
+    const isNewSite = site.id < 0; // Negative IDs are temporary
 
-  return (
-    <div
-      className="bg-gray-900 rounded-lg shadow-md p-4 transition-all hover:shadow-lg mb-4"
-      onClick={onClick}
-    >
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Site Name
-        </label>
-        <input
-          type="text"
-          value={site.name || ""}
-          onChange={(e) => onNameChange(site.id, e.target.value)}
-          className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter site name"
-        />
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          URL
-        </label>
-        <input
-          type="url"
-          value={site.url}
-          onChange={(e) => onUrlChange(site.id, e.target.value)}
-          className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="https://example.com"
-        />
-      </div>
-
-      <div className="flex justify-between items-center">
-        <div className="flex items-center">
-          <Flag
-            color={site.contentChanged ? "red" : "white"}
-            size={20}
-            className="mr-2"
+    return (
+      <div
+        className="bg-gray-900 rounded-lg shadow-md p-4 transition-all hover:shadow-lg mb-4"
+        onClick={onClick}
+      >
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Site Name
+          </label>
+          <input
+            type="text"
+            value={site.name || ""}
+            onChange={(e) => onNameChange(site.id, e.target.value)}
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter site name"
           />
-          <span className="text-sm text-gray-300">
-            {site.contentChanged ? "Changes detected" : "No changes"}
-          </span>
         </div>
 
-        {isNewSite && (
-          <div className="flex space-x-2">
-            <button
-              onClick={() => onSave(site)}
-              disabled={isSaving || !site.url}
-              className="p-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              title="Save website"
-            >
-              <Save size={16} />
-            </button>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            URL
+          </label>
+          <input
+            type="url"
+            value={site.url}
+            onChange={(e) => onUrlChange(site.id, e.target.value)}
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="https://example.com"
+          />
+        </div>
 
-            {onDelete && (
-              <button
-                onClick={() => onDelete(site.id)}
-                className="p-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-                title="Delete website"
-              >
-                <Trash size={16} />
-              </button>
-            )}
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <Flag
+              color={site.contentChanged ? "red" : "white"}
+              size={20}
+              className="mr-2"
+            />
+            <span className="text-sm text-gray-300">
+              {site.contentChanged ? "Changes detected" : "No changes"}
+            </span>
           </div>
-        )}
+
+          {isNewSite && (
+            <div className="flex space-x-2">
+              <button
+                onClick={() => onSave(site)}
+                disabled={isSaving || !site.url}
+                className="p-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Save website"
+              >
+                <Save size={16} />
+              </button>
+
+              {onDelete && (
+                <button
+                  onClick={() => onDelete(site.id)}
+                  className="p-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  title="Delete website"
+                >
+                  <Trash size={16} />
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 // SiteDetail Component
 const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
+  const [chatDetails, setChatDetails] = useState<string | null>(null);
+  const [loadingChat, setLoadingChat] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Reset chat details when site selection changes
+  useEffect(() => {
+    setChatDetails(null);
+    setError(null);
+  }, [site?.id]); // This will trigger whenever the selected site ID changes
+
   if (!site) {
     return (
       <div className="text-center p-6">
@@ -112,15 +122,19 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
 
   const handleGetChatDetails = async () => {
     try {
-      const chatDetails = await websiteApi.analyzeChanges(
+      setLoadingChat(true);
+      setError(null);
+      const response = await websiteApi.analyzeChanges(
         site.name || "",
         site.url,
-        site.lastHash
+        site.differences || ""
       );
-      console.log("Chat details:", chatDetails);
-      // Handle chat details display or state update here
-    } catch (error) {
-      console.error("Failed to fetch chat details:", error);
+      setChatDetails(response.message);
+    } catch (err) {
+      console.error("Failed to fetch chat details:", err);
+      setError("Failed to get change analysis. Please try again.");
+    } finally {
+      setLoadingChat(false);
     }
   };
 
@@ -154,28 +168,47 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
                 {new Date(site.lastChecked).toLocaleString()}
               </p>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center mb-4">
               <Flag
                 color={site.contentChanged ? "red" : "gray"}
                 size={24}
                 className="mr-2"
               />
               <span
-                className={`font-medium ${
-                  site.contentChanged ? "text-red-600" : "text-gray-600"
-                }`}
+                className={`font-medium ${site.contentChanged ? "text-red-600" : "text-gray-600"
+                  }`}
               >
                 {site.contentChanged
                   ? "Changes have been detected on this site"
                   : "No changes detected on this site"}
               </span>
             </div>
-            <button
-              onClick={handleGetChatDetails}
-              className="mt-4 p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Get Chat Details
-            </button>
+
+            {site.contentChanged && (
+              <button
+                onClick={handleGetChatDetails}
+                disabled={loadingChat}
+                className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loadingChat ? "Analyzing..." : "Analyze Changes"}
+              </button>
+            )}
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                {error}
+              </div>
+            )}
+
+            {/* Summary of Changes Section */}
+            {chatDetails && (
+              <div className="mt-6 border-t border-gray-200 pt-4">
+                <h4 className="text-lg font-bold text-gray-700 mb-3">Summary of Changes</h4>
+                <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <p className="text-gray-700 whitespace-pre-line">{chatDetails}</p>
+                </div>
+              </div>
+            )}
           </>
         )}
         {isNewSite && (
@@ -190,6 +223,8 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
     </div>
   );
 };
+
+
 
 // Main App Component
 const App: React.FC = () => {
