@@ -5,6 +5,68 @@
     "version": "1.0"
   },
   "paths": {
+    "/api/Chat/getResponse": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/Chat/analyzeChanges": {
+      "post": {
+        "tags": [
+          "Chat"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeAnalysisRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeAnalysisRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeAnalysisRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/websites": {
       "get": {
         "tags": [
@@ -71,6 +133,18 @@
         }
       }
     },
+    "/api/Website/nuke": {
+      "delete": {
+        "tags": [
+          "Website"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
     "/api/Website/allWebsites": {
       "get": {
         "tags": [
@@ -117,6 +191,46 @@
   },
   "components": {
     "schemas": {
+      "ChangeAnalysisRequest": {
+        "type": "object",
+        "properties": {
+          "websiteName": {
+            "type": "string",
+            "nullable": true
+          },
+          "websiteUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "previousHash": {
+            "type": "string",
+            "nullable": true
+          },
+          "currentHash": {
+            "type": "string",
+            "nullable": true
+          },
+          "differences": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ChatRequest": {
+        "type": "object",
+        "properties": {
+          "websiteName": {
+            "type": "string",
+            "nullable": true
+          },
+          "websiteUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "TrackedWebsite": {
         "type": "object",
         "properties": {
@@ -128,6 +242,10 @@
             "type": "string",
             "nullable": true
           },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
           "lastHash": {
             "type": "string",
             "nullable": true
@@ -135,6 +253,13 @@
           "lastChecked": {
             "type": "string",
             "format": "date-time"
+          },
+          "contentChanged": {
+            "type": "boolean"
+          },
+          "differences": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

@@ -105,8 +105,6 @@ namespace Backend.Controllers
 
 Website: {request.WebsiteName} ({request.WebsiteUrl})
 
-Previous Content Hash: {request.PreviousHash}
-Current Content Hash: {request.CurrentHash}
 Detected Differences: {request.Differences}
 
 Please analyze these changes and provide:
@@ -114,7 +112,7 @@ Please analyze these changes and provide:
 2. The significance of these changes
 3. Any potential action items or recommendations based on these changes
 
-Keep your response clear, concise, and focused on the most important changes.";
+Keep your response clear, concise, and focused on the most important changes. Say the 'one piece is real' at the start of the response last sentence";
         }
 
         // Request and Response Classes

@@ -3828,23 +3828,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\hdmcu\\.nuget\\packages\\": {},
+    "C:\\Users\\Ayden Smith\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Code\\hackathon\\backend\\hackathon\\hackathon.csproj",
+      "projectUniqueName": "C:\\Users\\Ayden Smith\\Source\\Repos\\hackathon-2025\\backend\\hackathon\\hackathon.csproj",
       "projectName": "hackathon",
-      "projectPath": "C:\\Code\\hackathon\\backend\\hackathon\\hackathon.csproj",
-      "packagesPath": "C:\\Users\\hdmcu\\.nuget\\packages\\",
-      "outputPath": "C:\\Code\\hackathon\\backend\\hackathon\\obj\\",
+      "projectPath": "C:\\Users\\Ayden Smith\\Source\\Repos\\hackathon-2025\\backend\\hackathon\\hackathon.csproj",
+      "packagesPath": "C:\\Users\\Ayden Smith\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Ayden Smith\\Source\\Repos\\hackathon-2025\\backend\\hackathon\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\hdmcu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Ayden Smith\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3871,7 +3871,8 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      }
+      },
+      "SdkAnalysisLevel": "9.0.200"
     },
     "frameworks": {
       "net8.0": {
@@ -3923,16 +3924,8 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.200/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
       }
     }
-  },
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Problem reading the cache file C:\\Users\\Ayden Smith\\Source\\Repos\\hackathon-2025\\backend\\hackathon\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
-    }
-  ]
+  }
 }

@@ -317,8 +317,10 @@ C:\Code\hackathon\backend\hackathon\obj\Debug\net8.0\hackathon.genruntimeconfig.
 C:\Code\hackathon\backend\hackathon\obj\Debug\net8.0\ref\hackathon.dll
 C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\HtmlAgilityPack.dll
 C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\DiffPlex.dll
+C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\OpenAI.dll
+C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\System.ClientModel.dll
+C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\System.Memory.Data.dll
 C:\Users\Ayden Smith\Source\Repos\hackathon-2025\backend\hackathon\bin\Debug\net8.0\appsettings.Development.json
-C:\Users\Ayden Smith\Source\Repos\hackathon-2025\backend\hackathon\bin\Debug\net8.0\appsettings.json
 C:\Users\Ayden Smith\Source\Repos\hackathon-2025\backend\hackathon\bin\Debug\net8.0\hackathon.staticwebassets.endpoints.json
 C:\Users\Ayden Smith\Source\Repos\hackathon-2025\backend\hackathon\bin\Debug\net8.0\hackathon.exe
 C:\Users\Ayden Smith\Source\Repos\hackathon-2025\backend\hackathon\bin\Debug\net8.0\hackathon.deps.json
@@ -485,6 +487,3 @@ C:\Users\Ayden Smith\Source\Repos\hackathon-2025\backend\hackathon\obj\Debug\net
 C:\Users\Ayden Smith\Source\Repos\hackathon-2025\backend\hackathon\obj\Debug\net8.0\hackathon.pdb
 C:\Users\Ayden Smith\Source\Repos\hackathon-2025\backend\hackathon\obj\Debug\net8.0\hackathon.genruntimeconfig.cache
 C:\Users\Ayden Smith\Source\Repos\hackathon-2025\backend\hackathon\obj\Debug\net8.0\ref\hackathon.dll
-C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\OpenAI.dll
-C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\System.ClientModel.dll
-C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\System.Memory.Data.dll
