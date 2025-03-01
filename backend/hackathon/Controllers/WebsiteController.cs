@@ -16,13 +16,16 @@ namespace Backend.Controllers
     {
         private readonly ILogger<WebsiteController> _logger;
         private readonly AppDbContext _context;
+        private readonly HttpClient _httpClient;
 
         public WebsiteController(
             AppDbContext context,
-            ILogger<WebsiteController> logger)
+            ILogger<WebsiteController> logger,
+            HttpClient httpClient)
         {
             _logger = logger;
             _context = context;
+            _httpClient = httpClient;
         }
 
 
@@ -46,11 +49,21 @@ namespace Backend.Controllers
         [HttpPost("addWebsite")]
         public async Task<IActionResult> AddWebsite(WebsiteRequest request)
         {
+           
+
+            HttpResponseMessage response = await _httpClient.GetAsync(request.Url);
+            if (!response.IsSuccessStatusCode)
+            {
+                return BadRequest("Failed to retrieve website content.");
+            }
+
+            string content = await response.Content.ReadAsStringAsync();
+
             TrackedWebsite website = new TrackedWebsite
             {
                 Url = request.Url,
                 LastChecked = DateTime.UtcNow,
-                LastHash = request.Content
+                LastHash = content
             };
 
             _context.TrackedWebsites.Add(website);
