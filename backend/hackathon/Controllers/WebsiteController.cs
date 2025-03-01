@@ -92,8 +92,8 @@ namespace Backend.Controllers
                                 website.ContentChanged = true;
                                 website.LastHash = htmlContent;
                                 website.Differences = filteredDifferences;
-                                website.LastChecked = DateTime.UtcNow;
                             }
+                            website.LastChecked = DateTime.UtcNow;
                             await _context.SaveChangesAsync();
                         }
                         else

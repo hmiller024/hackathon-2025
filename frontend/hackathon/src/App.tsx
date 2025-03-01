@@ -7,8 +7,7 @@ const SiteCard: React.FC<{
   site: TrackedWebsite;
   onNameChange: (id: number, name: string) => void;
   onUrlChange: (id: number, url: string) => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
+  onClick: () => void;
   onSave: (site: TrackedWebsite) => void;
   onDelete?: (id: number) => void;
   isSaving: boolean;
@@ -16,8 +15,7 @@ const SiteCard: React.FC<{
   site,
   onNameChange,
   onUrlChange,
-  onMouseEnter,
-  onMouseLeave,
+  onClick,
   onSave,
   onDelete,
   isSaving,
@@ -27,8 +25,7 @@ const SiteCard: React.FC<{
   return (
     <div
       className="bg-gray-900 rounded-lg shadow-md p-4 transition-all hover:shadow-lg mb-4"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onClick={onClick}
     >
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -59,12 +56,12 @@ const SiteCard: React.FC<{
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <Flag
-            color={site.hasChanges ? "red" : "white"}
+            color={site.contentChanged ? "red" : "white"}
             size={20}
             className="mr-2"
           />
           <span className="text-sm text-gray-300">
-            {site.hasChanges ? "Changes detected" : "No changes"}
+            {site.contentChanged ? "Changes detected" : "No changes"}
           </span>
         </div>
 
@@ -100,9 +97,7 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
   if (!site) {
     return (
       <div className="text-center p-6">
-        <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-          Website Monitor
-        </h2>
+        <h2 className="text-2xl font-bold mb-4 text-white">Website Monitor</h2>
         <p className="text-gray-600 mb-6">
           Hover over a site from the list to view details
         </p>
@@ -117,11 +112,11 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-semibold text-gray-700 mb-4">
-        Website Monitor
-      </h2>
+      <h2 className="text-2xl font-bold mb-4 text-white">Website Monitor</h2>
       <div className="p-6 bg-white rounded-lg shadow-md">
-        <h3 className="text-xl font-bold mb-4">{site.name || "New Website"}</h3>
+        <h3 className="text-xl font-bold text-gray-600 mb-6">
+          {site.name || "New Website"}
+        </h3>
         <div className="mb-4">
           <p className="text-gray-700 font-medium">URL:</p>
           {site.url ? (
@@ -147,16 +142,16 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
             </div>
             <div className="flex items-center">
               <Flag
-                color={site.hasChanges ? "red" : "gray"}
+                color={site.contentChanged ? "red" : "gray"}
                 size={24}
                 className="mr-2"
               />
               <span
                 className={`font-medium ${
-                  site.hasChanges ? "text-red-600" : "text-gray-600"
+                  site.contentChanged ? "text-red-600" : "text-gray-600"
                 }`}
               >
-                {site.hasChanges
+                {site.contentChanged
                   ? "Changes have been detected on this site"
                   : "No changes detected on this site"}
               </span>
@@ -281,7 +276,7 @@ const App: React.FC = () => {
       name: "",
       lastChecked: new Date().toISOString(),
       lastHash: "",
-      hasChanges: false,
+      contentChanged: false,
     };
 
     // Add the new website to the beginning of the sites array
@@ -322,34 +317,31 @@ const App: React.FC = () => {
           <div className="flex justify-center p-8">
             <p className="text-white">Loading sites...</p>
           </div>
-        ) : sites.length === 0 ? (
-          <div className="bg-gray-900 rounded-lg p-6 text-center">
-            <p className="text-white mb-2">No websites found</p>
-            <p className="text-gray-400 text-sm">
-              Click the + button to add a website
-            </p>
-          </div>
         ) : (
-          <div className="space-y-2">
+          <div>
             {sites.map((site) => (
               <SiteCard
                 key={site.id}
                 site={site}
                 onNameChange={handleNameChange}
                 onUrlChange={handleUrlChange}
-                onMouseEnter={() => setHoveredSite(site)}
-                onMouseLeave={() => setHoveredSite(null)}
                 onSave={saveWebsite}
                 onDelete={site.id < 0 ? deleteUnsavedWebsite : undefined}
                 isSaving={saving}
+                onClick={() => setHoveredSite(site)}
               />
             ))}
           </div>
         )}
       </div>
 
-      <div className="w-1/2 flex items-center justify-center bg-gray-100">
-        <SiteDetail site={hoveredSite} />
+      {/* SiteDetails Section - Display Hovered Site Details */}
+      <div className="w-1/2 overflow-y-auto p-6 bg-gray-800">
+        {hoveredSite && (
+          <SiteDetail
+            site={hoveredSite} // Pass the hovered site to SiteDetails
+          />
+        )}
       </div>
     </div>
   );
