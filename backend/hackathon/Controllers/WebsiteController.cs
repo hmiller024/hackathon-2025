@@ -79,27 +79,34 @@ namespace Backend.Controllers
                         {
                             string htmlContent = await response.Content.ReadAsStringAsync();
 
+                            string differences = Differences(htmlContent, website.LastHash);
                             htmlContent = CleanHtml(htmlContent);
+                            string filteredDifferences = string.Join("\n",
+                                    differences.Split('\n')
+                                               .Where(line => !Regex.IsMatch(line, @"^[-+]\s*$")) 
+                                );
+
                             if (!htmlContent.Equals(website.LastHash))
                             {
-
                                 website.ContentChanged = true;
                                 website.LastHash = htmlContent;
+                                website.Differences = filteredDifferences;
                             }
+                            await _context.SaveChangesAsync();
                         }
                         else
                         {
-                            website.ContentChanged = false;  // If request fails, mark as false
+                            website.ContentChanged = false; 
                         }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError($"Error fetching website {website.Url}: {ex.Message}");
-                        website.ContentChanged = false;  // In case of an error, mark as false
+                        website.ContentChanged = false; 
                     }
                 }
             }
-
+            await _context.SaveChangesAsync();
             return Ok(websites);
         }
 
@@ -115,6 +122,7 @@ namespace Backend.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         string htmlContent = await response.Content.ReadAsStringAsync();
+                        
                         htmlContent = CleanHtml(htmlContent);
                         TrackedWebsite website = new TrackedWebsite
                         {
@@ -146,13 +154,32 @@ namespace Backend.Controllers
         {
             // Remove dynamic query parameters from URLs (session-related or tracking)
             string pattern = @"([?&])(sessionid=\w+|token=[\w\d]+|wordfence_lh=\d+|hid=[A-F0-9]+)(&|$)";
-
+            
             string cleanedHtml = Regex.Replace(html, pattern, "$1");
             cleanedHtml = Regex.Replace(cleanedHtml, @"\s+", " ").Trim();
 
             // Load the HTML into a HtmlDocument
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(cleanedHtml);
+
+            var metaTags = htmlDoc.DocumentNode.SelectNodes("//meta");
+            var inputFields = htmlDoc.DocumentNode.SelectNodes("//input|//textarea|//select|//button|//option");
+
+            if (metaTags != null)
+            {
+                foreach (var node in metaTags)
+                {
+                    node.Remove(); 
+                }
+            }
+
+            if (inputFields != null)
+            {
+                foreach (var node in inputFields)
+                {
+                    node.Remove(); 
+                }
+            }
 
             // Remove elements with dynamic IDs or classes (e.g., timestamp or tracking elements)
             var dynamicNodes = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'dynamic') or @id='timestamp']");
@@ -161,7 +188,7 @@ namespace Backend.Controllers
             {
                 foreach (var node in dynamicNodes)
                 {
-                    node.Remove(); // Remove unwanted elements
+                    node.Remove(); 
                 }
             }
 
@@ -169,26 +196,36 @@ namespace Backend.Controllers
             string jsPattern = @"(\/\/georgerrmartin\.com\/notablog\/\?hid=)[A-F0-9]+";
             cleanedHtml = Regex.Replace(htmlDoc.DocumentNode.OuterHtml, jsPattern, "$1STATICVALUE");
 
-            // Return the cleaned-up HTML as a string
             return cleanedHtml;
         }
 
-        //private string GetTextDifference(string oldText, string newText)
-        //{
-        //    // Create a new instance of the Differ class
-        //    var differ = new Differ();
 
-        //    // Generate inline diffs
-        //    var diffResult = differ.CreateDiffs(oldText, newText,false, true);
+        private string Differences(string newHtml, string oldHtml)
+        {
+            var differ = new Differ();
 
-        //    // You can return the result as a string with detailed diff types (Insert, Delete, Unchanged)
-        //    var result = new StringBuilder();
-        //    foreach (var diff in diffResult)
-        //    {
-        //        result.AppendLine($"{diff.Type}: {diff.Text}");
-        //    }
-        //    return result.ToString();
-        //}
+            var diffResult = differ.CreateCharacterDiffs(oldHtml, newHtml, false); 
+
+            var result = new StringBuilder();
+
+            foreach (var block in diffResult.DiffBlocks)
+            {
+                if (block.DeleteCountA > 0)
+                {
+                    string deletedText = oldHtml.Substring(block.DeleteStartA, block.DeleteCountA);
+                    result.AppendLine($"- {deletedText}"); 
+                }
+
+                if (block.InsertCountB > 0)
+                {
+                    string insertedText = newHtml.Substring(block.InsertStartB, block.InsertCountB);
+                    result.AppendLine($"+ {insertedText}");
+                }
+            }
+
+            return result.ToString();
+        }
+
     }
        
 
