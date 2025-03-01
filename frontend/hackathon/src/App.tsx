@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Flag } from "lucide-react";
-import websiteApi, { TrackedWebsite } from "./api"; // Import the API service
+import React, { useState, useEffect } from 'react';
+import { Flag, Plus } from 'lucide-react';
+import websiteApi, { TrackedWebsite } from './api'; // Import the API service
 
 // SiteCard Component
 const SiteCard: React.FC<{
@@ -25,6 +25,7 @@ const SiteCard: React.FC<{
           value={site.name || ""}
           onChange={(e) => onNameChange(site.id, e.target.value)}
           className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Enter site name"
         />
       </div>
 
@@ -37,6 +38,7 @@ const SiteCard: React.FC<{
           value={site.url}
           onChange={(e) => onUrlChange(site.id, e.target.value)}
           className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="https://example.com"
         />
       </div>
 
@@ -103,9 +105,8 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
             className="mr-2"
           />
           <span
-            className={`font-medium ${
-              site.hasChanges ? "text-red-600" : "text-gray-600"
-            }`}
+            className={`font-medium ${site.hasChanges ? "text-red-600" : "text-gray-600"
+              }`}
           >
             {site.hasChanges
               ? "Changes have been detected on this site"
@@ -169,18 +170,45 @@ const App: React.FC = () => {
     }
   };
 
+  const addNewWebsite = () => {
+    // Create a temporary website in the UI
+    const tempId = -Date.now(); // Use negative timestamp as temporary ID
+    const newWebsite: TrackedWebsite = {
+      id: tempId,
+      url: '',
+      name: '',
+      lastChecked: new Date().toISOString(),
+      lastHash: '',
+      hasChanges: false
+    };
+
+    // Add the new website to the beginning of the sites array
+    setSites([newWebsite, ...sites]);
+    setHoveredSite(newWebsite);
+  };
+
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen w-full">
       <div className="w-1/2 overflow-y-auto p-6 bg-gray-800 border-r border-gray-700">
         <h1 className="text-3xl font-bold mb-4 text-white">Your Sites</h1>
 
-        <button
-          onClick={checkForChanges}
-          disabled={loading}
-          className="mb-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? "Loading..." : "Check for Changes"}
-        </button>
+        <div className="flex space-x-3 mb-6">
+          <button
+            onClick={checkForChanges}
+            disabled={loading}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? 'Loading...' : 'Check for Changes'}
+          </button>
+
+          <button
+            onClick={addNewWebsite}
+            disabled={loading}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          >
+            <Plus size={20} color="white" />
+          </button>
+        </div>
 
         {error && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -195,9 +223,7 @@ const App: React.FC = () => {
         ) : sites.length === 0 ? (
           <div className="bg-gray-900 rounded-lg p-6 text-center">
             <p className="text-white mb-2">No websites found</p>
-            <p className="text-gray-400 text-sm">
-              Add a website to start monitoring
-            </p>
+            <p className="text-gray-400 text-sm">Click the + button to add a website</p>
           </div>
         ) : (
           <div className="space-y-2">
