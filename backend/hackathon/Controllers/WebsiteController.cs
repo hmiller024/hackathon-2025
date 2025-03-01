@@ -10,5 +10,56 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace Backend.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
+    public class WebsiteController: ControllerBase
+    {
+        private readonly ILogger<WebsiteController> _logger;
+        private readonly AppDbContext _context;
 
+        public WebsiteController(
+            AppDbContext context,
+            ILogger<WebsiteController> logger)
+        {
+            _logger = logger;
+            _context = context;
+        }
+
+
+        [HttpGet("website")]
+        public async Task<IActionResult> GetWebsiteFromId(int id) {
+            _logger.LogInformation("KYS");
+            var website = await _context.TrackedWebsites.FindAsync(id);
+
+            return Ok(website);
+        }
+
+        [HttpPost("addWebsite")]
+        public async Task<IActionResult> AddWebsite(WebsiteRequest request)
+        {
+            TrackedWebsite website = new TrackedWebsite
+            {
+                Url = request.Url,
+                LastChecked = DateTime.UtcNow,
+                LastHash = request.Content
+            };
+
+            _context.TrackedWebsites.Add(website);
+            await _context.SaveChangesAsync();  
+            return Ok(request);
+        }
+    }
+
+    public class WebsiteRequest
+    {
+        public string Url { get; set; }
+        public string Content { get; set; }
+
+        public WebsiteRequest(string url, string content)
+        {
+            Url = url;
+            Content = content;
+
+        }
+    }
 }
