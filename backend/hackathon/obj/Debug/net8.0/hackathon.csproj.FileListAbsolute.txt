@@ -317,3 +317,4 @@ C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\hackathon.pdb
 C:\Code\hackathon\backend\hackathon\obj\Debug\net8.0\hackathon.genruntimeconfig.cache
 C:\Code\hackathon\backend\hackathon\obj\Debug\net8.0\ref\hackathon.dll
 C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\HtmlAgilityPack.dll
+C:\Code\hackathon\backend\hackathon\bin\Debug\net8.0\DiffPlex.dll

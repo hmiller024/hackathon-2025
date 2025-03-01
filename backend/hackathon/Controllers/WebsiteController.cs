@@ -8,6 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using HtmlAgilityPack;
+using System.Text.RegularExpressions;
+using DiffPlex;
+using DiffPlex.DiffBuilder.Model;
+using DiffPlex.DiffBuilder;
+using System.Linq;
+using System.Text;
 
 namespace Backend.Controllers
 {
@@ -36,6 +42,16 @@ namespace Backend.Controllers
             return Ok(website);
         }
 
+        [HttpDelete("nuke")]
+        public async Task<IActionResult> NukeDb()
+        {
+            _logger.LogInformation("Killing the children");
+
+            await _context.TrackedWebsites.ExecuteDeleteAsync();
+
+            return Ok();
+        }
+
         [HttpGet("allWebsites")]
         public async Task<IActionResult> GetAllWebsites()
         {
@@ -53,19 +69,20 @@ namespace Backend.Controllers
                         if (!Uri.TryCreate(website.Url, UriKind.Absolute, out websiteUri))
                         {
                             _logger.LogError($"Invalid URL: {website.Url} for website {website.Id}. Skipping...");
-                            website.ContentChanged = false; // Mark as false since the URL is malformed
-                            continue;  // Skip the website if the URL is invalid
+                            website.ContentChanged = false; 
+                            continue; 
                         }
 
-                        // Make the HTTP request with the valid absolute URI
                         HttpResponseMessage response = await client.GetAsync(websiteUri);
 
                         if (response.IsSuccessStatusCode)
                         {
                             string htmlContent = await response.Content.ReadAsStringAsync();
+
                             htmlContent = CleanHtml(htmlContent);
-                            if (htmlContent != website.LastHash)
+                            if (!htmlContent.Equals(website.LastHash))
                             {
+
                                 website.ContentChanged = true;
                                 website.LastHash = htmlContent;
                             }
@@ -127,9 +144,17 @@ namespace Backend.Controllers
         }
         private string CleanHtml(string html)
         {
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(html);
+            // Remove dynamic query parameters from URLs (session-related or tracking)
+            string pattern = @"([?&])(sessionid=\w+|token=[\w\d]+|wordfence_lh=\d+|hid=[A-F0-9]+)(&|$)";
 
+            string cleanedHtml = Regex.Replace(html, pattern, "$1");
+            cleanedHtml = Regex.Replace(cleanedHtml, @"\s+", " ").Trim();
+
+            // Load the HTML into a HtmlDocument
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(cleanedHtml);
+
+            // Remove elements with dynamic IDs or classes (e.g., timestamp or tracking elements)
             var dynamicNodes = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'dynamic') or @id='timestamp']");
 
             if (dynamicNodes != null)
@@ -140,10 +165,30 @@ namespace Backend.Controllers
                 }
             }
 
+            // Remove or replace dynamic JavaScript parameters (like 'hid' or session-specific URLs)
+            string jsPattern = @"(\/\/georgerrmartin\.com\/notablog\/\?hid=)[A-F0-9]+";
+            cleanedHtml = Regex.Replace(htmlDoc.DocumentNode.OuterHtml, jsPattern, "$1STATICVALUE");
+
             // Return the cleaned-up HTML as a string
-            return htmlDoc.DocumentNode.OuterHtml;
+            return cleanedHtml;
         }
 
+        //private string GetTextDifference(string oldText, string newText)
+        //{
+        //    // Create a new instance of the Differ class
+        //    var differ = new Differ();
+
+        //    // Generate inline diffs
+        //    var diffResult = differ.CreateDiffs(oldText, newText,false, true);
+
+        //    // You can return the result as a string with detailed diff types (Insert, Delete, Unchanged)
+        //    var result = new StringBuilder();
+        //    foreach (var diff in diffResult)
+        //    {
+        //        result.AppendLine($"{diff.Type}: {diff.Text}");
+        //    }
+        //    return result.ToString();
+        //}
     }
        
 
