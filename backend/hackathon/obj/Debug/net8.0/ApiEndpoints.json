@@ -27,6 +27,16 @@
   },
   {
     "ContainingType": "Backend.Controllers.WebsiteController",
+    "Method": "NukeDb",
+    "RelativePath": "api/Website/nuke",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Backend.Controllers.WebsiteController",
     "Method": "GetWebsiteFromId",
     "RelativePath": "api/Website/website",
     "HttpMethod": "GET",
@@ -43,7 +53,7 @@
   },
   {
     "ContainingType": "Program\u002B\u003C\u003Ec",
-    "Method": "\u003C\u003CMain\u003E$\u003Eb__0_2",
+    "Method": "\u003C\u003CMain\u003E$\u003Eb__0_3",
     "RelativePath": "track",
     "HttpMethod": "POST",
     "IsController": false,
@@ -65,7 +75,7 @@
   },
   {
     "ContainingType": "Program\u002B\u003C\u003Ec",
-    "Method": "\u003C\u003CMain\u003E$\u003Eb__0_1",
+    "Method": "\u003C\u003CMain\u003E$\u003Eb__0_2",
     "RelativePath": "websites",
     "HttpMethod": "GET",
     "IsController": false,

@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "b2P52OmYZEc7tix5SJpdFpyyDGdQX0/UWbQVNVB00TcHmpdbLutGRLIasO0nJHorpfbZU53bHG+hZPfX3lKRmw==",
+  "dgSpecHash": "cAsRj0rxdyBVJRoK44sJJqESApt6Ng3MA0SxewHOcXUnkE+vRITq9B4RpQIsqPQT2nsQztbcg3RXW7OkeHdfUQ==",
   "success": true,
   "projectFilePath": "C:\\Code\\hackathon\\backend\\hackathon\\hackathon.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\hdmcu\\.nuget\\packages\\diffplex\\1.7.2\\diffplex.1.7.2.nupkg.sha512",
+    "C:\\Users\\hdmcu\\.nuget\\packages\\htmlagilitypack\\1.11.74\\htmlagilitypack.1.11.74.nupkg.sha512",
     "C:\\Users\\hdmcu\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\hdmcu\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\7.0.0\\microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",
     "C:\\Users\\hdmcu\\.nuget\\packages\\microsoft.build.framework\\17.8.3\\microsoft.build.framework.17.8.3.nupkg.sha512",
