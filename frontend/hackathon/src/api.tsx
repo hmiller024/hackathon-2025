@@ -16,7 +16,7 @@ export interface WebsiteRequest {
 }
 
 // Base API URL - should be configured based on your environment
-const API_BASE_URL = 'http://localhost:5173/api/';
+const API_BASE_URL = 'http://localhost:7249/api/';
 
 // API service class
 class WebsiteApiService {
