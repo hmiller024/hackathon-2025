@@ -14,6 +14,7 @@ using DiffPlex.DiffBuilder.Model;
 using DiffPlex.DiffBuilder;
 using System.Linq;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Backend.Controllers
 {
@@ -91,6 +92,7 @@ namespace Backend.Controllers
                                 website.ContentChanged = true;
                                 website.LastHash = htmlContent;
                                 website.Differences = filteredDifferences;
+                                website.LastChecked = DateTime.UtcNow;
                             }
                             await _context.SaveChangesAsync();
                         }
@@ -111,10 +113,11 @@ namespace Backend.Controllers
         }
 
         [HttpPost("addWebsite")]
-        public async Task<IActionResult> AddWebsite(WebsiteRequest request)
+        public async Task<IActionResult> AddWebsite([FromBody] WebsiteRequest request)
         {
             try
             {
+                _logger.LogInformation($"Received URL: {request.Url}, Content: {request.Content}");
                 using (HttpClient client = new HttpClient())
                 {
                     HttpResponseMessage response = await client.GetAsync(request.Url);
