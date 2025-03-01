@@ -3828,23 +3828,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Ayden Smith\\.nuget\\packages\\": {},
+    "C:\\Users\\hdmcu\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Ayden Smith\\Source\\Repos\\hackathon-2025\\backend\\hackathon\\hackathon.csproj",
+      "projectUniqueName": "C:\\Code\\hackathon\\backend\\hackathon\\hackathon.csproj",
       "projectName": "hackathon",
-      "projectPath": "C:\\Users\\Ayden Smith\\Source\\Repos\\hackathon-2025\\backend\\hackathon\\hackathon.csproj",
-      "packagesPath": "C:\\Users\\Ayden Smith\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Ayden Smith\\Source\\Repos\\hackathon-2025\\backend\\hackathon\\obj\\",
+      "projectPath": "C:\\Code\\hackathon\\backend\\hackathon\\hackathon.csproj",
+      "packagesPath": "C:\\Users\\hdmcu\\.nuget\\packages\\",
+      "outputPath": "C:\\Code\\hackathon\\backend\\hackathon\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Ayden Smith\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\hdmcu\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -3871,8 +3871,7 @@
         "enableAudit": "true",
         "auditLevel": "low",
         "auditMode": "direct"
-      },
-      "SdkAnalysisLevel": "9.0.200"
+      }
     },
     "frameworks": {
       "net8.0": {
@@ -3924,7 +3923,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.200/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.200/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
