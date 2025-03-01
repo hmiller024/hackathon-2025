@@ -7,4 +7,5 @@ public class TrackedWebsite
     public string Name {  get; set; } = string.Empty ;
     public string LastHash { get; set; } = string.Empty;
     public DateTime LastChecked { get; set; } = DateTime.UtcNow;
+    public bool ContentChanged { get; set; }
 }
