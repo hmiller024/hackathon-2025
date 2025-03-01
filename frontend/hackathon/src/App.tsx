@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Flag, Plus } from 'lucide-react';
+import { Flag, Plus, Save, Trash } from 'lucide-react';
 import websiteApi, { TrackedWebsite } from './api'; // Import the API service
 
 // SiteCard Component
@@ -9,7 +9,12 @@ const SiteCard: React.FC<{
   onUrlChange: (id: number, url: string) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
-}> = ({ site, onNameChange, onUrlChange, onMouseEnter, onMouseLeave }) => {
+  onSave: (site: TrackedWebsite) => void;
+  onDelete?: (id: number) => void;
+  isSaving: boolean;
+}> = ({ site, onNameChange, onUrlChange, onMouseEnter, onMouseLeave, onSave, onDelete, isSaving }) => {
+  const isNewSite = site.id < 0; // Negative IDs are temporary
+
   return (
     <div
       className="bg-gray-900 rounded-lg shadow-md p-4 transition-all hover:shadow-lg mb-4"
@@ -42,15 +47,40 @@ const SiteCard: React.FC<{
         />
       </div>
 
-      <div className="flex items-center">
-        <Flag
-          color={site.hasChanges ? "red" : "white"}
-          size={20}
-          className="mr-2"
-        />
-        <span className="text-sm text-gray-300">
-          {site.hasChanges ? "Changes detected" : "No changes"}
-        </span>
+      <div className="flex justify-between items-center">
+        <div className="flex items-center">
+          <Flag
+            color={site.hasChanges ? "red" : "white"}
+            size={20}
+            className="mr-2"
+          />
+          <span className="text-sm text-gray-300">
+            {site.hasChanges ? "Changes detected" : "No changes"}
+          </span>
+        </div>
+
+        {isNewSite && (
+          <div className="flex space-x-2">
+            <button
+              onClick={() => onSave(site)}
+              disabled={isSaving || !site.url}
+              className="p-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Save website"
+            >
+              <Save size={16} />
+            </button>
+
+            {onDelete && (
+              <button
+                onClick={() => onDelete(site.id)}
+                className="p-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+                title="Delete website"
+              >
+                <Trash size={16} />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -74,45 +104,61 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
     );
   }
 
+  const isNewSite = site.id < 0;
+
   return (
     <div className="p-6">
       <h2 className="text-2xl font-semibold text-gray-700 mb-4">
         Website Monitor
       </h2>
       <div className="p-6 bg-white rounded-lg shadow-md">
-        <h3 className="text-xl font-bold mb-4">{site.name}</h3>
+        <h3 className="text-xl font-bold mb-4">{site.name || "New Website"}</h3>
         <div className="mb-4">
           <p className="text-gray-700 font-medium">URL:</p>
-          <a
-            href={site.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            {site.url}
-          </a>
+          {site.url ? (
+            <a
+              href={site.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline"
+            >
+              {site.url}
+            </a>
+          ) : (
+            <span className="text-gray-500">No URL specified</span>
+          )}
         </div>
-        <div className="mb-4">
-          <p className="text-gray-700 font-medium">Last Checked:</p>
-          <p className="text-gray-600">
-            {new Date(site.lastChecked).toLocaleString()}
-          </p>
-        </div>
-        <div className="flex items-center">
-          <Flag
-            color={site.hasChanges ? "red" : "gray"}
-            size={24}
-            className="mr-2"
-          />
-          <span
-            className={`font-medium ${site.hasChanges ? "text-red-600" : "text-gray-600"
-              }`}
-          >
-            {site.hasChanges
-              ? "Changes have been detected on this site"
-              : "No changes detected on this site"}
-          </span>
-        </div>
+        {!isNewSite && (
+          <>
+            <div className="mb-4">
+              <p className="text-gray-700 font-medium">Last Checked:</p>
+              <p className="text-gray-600">
+                {new Date(site.lastChecked).toLocaleString()}
+              </p>
+            </div>
+            <div className="flex items-center">
+              <Flag
+                color={site.hasChanges ? "red" : "gray"}
+                size={24}
+                className="mr-2"
+              />
+              <span
+                className={`font-medium ${site.hasChanges ? "text-red-600" : "text-gray-600"}`}
+              >
+                {site.hasChanges
+                  ? "Changes have been detected on this site"
+                  : "No changes detected on this site"}
+              </span>
+            </div>
+          </>
+        )}
+        {isNewSite && (
+          <div className="mt-4 p-3 bg-blue-50 text-blue-700 rounded border border-blue-200">
+            <p className="text-sm">
+              Enter a valid URL and click the save button to start tracking this website.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -123,6 +169,7 @@ const App: React.FC = () => {
   const [sites, setSites] = useState<TrackedWebsite[]>([]);
   const [hoveredSite, setHoveredSite] = useState<TrackedWebsite | null>(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch all websites on component mount
@@ -154,6 +201,42 @@ const App: React.FC = () => {
     setSites(
       sites.map((site) => (site.id === id ? { ...site, url: newUrl } : site))
     );
+  };
+
+  const saveWebsite = async (site: TrackedWebsite) => {
+    if (!site.url) {
+      setError("URL is required");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const savedSite = await websiteApi.addWebsite(site.url);
+
+      // Replace the temporary site with the saved one
+      setSites(prevSites =>
+        prevSites.map(s => s.id === site.id ? savedSite : s)
+      );
+
+      // Update hovered site if it was the one we just saved
+      if (hoveredSite && hoveredSite.id === site.id) {
+        setHoveredSite(savedSite);
+      }
+
+      setError(null);
+    } catch (err) {
+      console.error("Failed to save website:", err);
+      setError("Failed to save the website. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteUnsavedWebsite = (id: number) => {
+    setSites(prevSites => prevSites.filter(site => site.id !== id));
+    if (hoveredSite && hoveredSite.id === id) {
+      setHoveredSite(null);
+    }
   };
 
   const checkForChanges = async () => {
@@ -203,7 +286,7 @@ const App: React.FC = () => {
 
           <button
             onClick={addNewWebsite}
-            disabled={loading}
+            disabled={loading || saving}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
             <Plus size={20} color="white" />
@@ -235,6 +318,9 @@ const App: React.FC = () => {
                 onUrlChange={handleUrlChange}
                 onMouseEnter={() => setHoveredSite(site)}
                 onMouseLeave={() => setHoveredSite(null)}
+                onSave={saveWebsite}
+                onDelete={site.id < 0 ? deleteUnsavedWebsite : undefined}
+                isSaving={saving}
               />
             ))}
           </div>
