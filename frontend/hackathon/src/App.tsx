@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Flag, Plus, Save, Trash } from 'lucide-react';
-import websiteApi, { TrackedWebsite } from './api'; // Import the API service
+import React, { useState, useEffect } from "react";
+import { Flag, Plus, Save, Trash } from "lucide-react";
+import websiteApi, { TrackedWebsite } from "./api"; // Import the API service
 
 // SiteCard Component
 const SiteCard: React.FC<{
@@ -12,7 +12,16 @@ const SiteCard: React.FC<{
   onSave: (site: TrackedWebsite) => void;
   onDelete?: (id: number) => void;
   isSaving: boolean;
-}> = ({ site, onNameChange, onUrlChange, onMouseEnter, onMouseLeave, onSave, onDelete, isSaving }) => {
+}> = ({
+  site,
+  onNameChange,
+  onUrlChange,
+  onMouseEnter,
+  onMouseLeave,
+  onSave,
+  onDelete,
+  isSaving,
+}) => {
   const isNewSite = site.id < 0; // Negative IDs are temporary
 
   return (
@@ -143,7 +152,9 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
                 className="mr-2"
               />
               <span
-                className={`font-medium ${site.hasChanges ? "text-red-600" : "text-gray-600"}`}
+                className={`font-medium ${
+                  site.hasChanges ? "text-red-600" : "text-gray-600"
+                }`}
               >
                 {site.hasChanges
                   ? "Changes have been detected on this site"
@@ -155,7 +166,8 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
         {isNewSite && (
           <div className="mt-4 p-3 bg-blue-50 text-blue-700 rounded border border-blue-200">
             <p className="text-sm">
-              Enter a valid URL and click the save button to start tracking this website.
+              Enter a valid URL and click the save button to start tracking this
+              website.
             </p>
           </div>
         )}
@@ -211,11 +223,18 @@ const App: React.FC = () => {
 
     try {
       setSaving(true);
-      const savedSite = await websiteApi.addWebsite(site.url);
+
+      let savedSite: TrackedWebsite; // Declare savedSite here
+
+      if (site.name == null) {
+        savedSite = await websiteApi.addWebsite(site.url, site.url);
+      } else {
+        savedSite = await websiteApi.addWebsite(site.url, site.name);
+      }
 
       // Replace the temporary site with the saved one
-      setSites(prevSites =>
-        prevSites.map(s => s.id === site.id ? savedSite : s)
+      setSites((prevSites) =>
+        prevSites.map((s) => (s.id === site.id ? savedSite : s))
       );
 
       // Update hovered site if it was the one we just saved
@@ -233,7 +252,7 @@ const App: React.FC = () => {
   };
 
   const deleteUnsavedWebsite = (id: number) => {
-    setSites(prevSites => prevSites.filter(site => site.id !== id));
+    setSites((prevSites) => prevSites.filter((site) => site.id !== id));
     if (hoveredSite && hoveredSite.id === id) {
       setHoveredSite(null);
     }
@@ -258,11 +277,11 @@ const App: React.FC = () => {
     const tempId = -Date.now(); // Use negative timestamp as temporary ID
     const newWebsite: TrackedWebsite = {
       id: tempId,
-      url: '',
-      name: '',
+      url: "",
+      name: "",
       lastChecked: new Date().toISOString(),
-      lastHash: '',
-      hasChanges: false
+      lastHash: "",
+      hasChanges: false,
     };
 
     // Add the new website to the beginning of the sites array
@@ -281,7 +300,7 @@ const App: React.FC = () => {
             disabled={loading}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Loading...' : 'Check for Changes'}
+            {loading ? "Loading..." : "Check for Changes"}
           </button>
 
           <button
@@ -306,7 +325,9 @@ const App: React.FC = () => {
         ) : sites.length === 0 ? (
           <div className="bg-gray-900 rounded-lg p-6 text-center">
             <p className="text-white mb-2">No websites found</p>
-            <p className="text-gray-400 text-sm">Click the + button to add a website</p>
+            <p className="text-gray-400 text-sm">
+              Click the + button to add a website
+            </p>
           </div>
         ) : (
           <div className="space-y-2">
