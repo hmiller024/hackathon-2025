@@ -7,7 +7,7 @@ export interface TrackedWebsite {
   lastChecked: string;
   lastHash: string;
   name?: string;
-  hasChanges?: boolean;
+  contentChanged?: boolean;
 }
 
 export interface WebsiteRequest {
@@ -72,7 +72,7 @@ class WebsiteApiService {
       lastChecked: new Date().toISOString(),
       lastHash: response.data.content,
       name: this.extractNameFromUrl(response.data.url),
-      hasChanges: false,
+      contentChanged: false,
     };
   }
 
@@ -130,7 +130,8 @@ class WebsiteApiService {
       // Add name property if it doesn't exist (derived from URL)
       name: website.name || this.extractNameFromUrl(website.url),
       // Add hasChanges property if it doesn't exist
-      hasChanges: website.hasChanges !== undefined ? website.hasChanges : false,
+      contentChanged:
+        website.contentChanged !== undefined ? website.contentChanged : false,
     };
   }
 

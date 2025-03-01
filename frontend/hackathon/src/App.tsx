@@ -59,12 +59,12 @@ const SiteCard: React.FC<{
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <Flag
-            color={site.hasChanges ? "red" : "white"}
+            color={site.contentChanged ? "red" : "white"}
             size={20}
             className="mr-2"
           />
           <span className="text-sm text-gray-300">
-            {site.hasChanges ? "Changes detected" : "No changes"}
+            {site.contentChanged ? "Changes detected" : "No changes"}
           </span>
         </div>
 
@@ -147,16 +147,16 @@ const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
             </div>
             <div className="flex items-center">
               <Flag
-                color={site.hasChanges ? "red" : "gray"}
+                color={site.contentChanged ? "red" : "gray"}
                 size={24}
                 className="mr-2"
               />
               <span
                 className={`font-medium ${
-                  site.hasChanges ? "text-red-600" : "text-gray-600"
+                  site.contentChanged ? "text-red-600" : "text-gray-600"
                 }`}
               >
-                {site.hasChanges
+                {site.contentChanged
                   ? "Changes have been detected on this site"
                   : "No changes detected on this site"}
               </span>
@@ -281,7 +281,7 @@ const App: React.FC = () => {
       name: "",
       lastChecked: new Date().toISOString(),
       lastHash: "",
-      hasChanges: false,
+      contentChanged: false,
     };
 
     // Add the new website to the beginning of the sites array
