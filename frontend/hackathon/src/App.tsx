@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Flag } from 'lucide-react';
-
-// Types
-interface SiteData {
-  id: string;
-  url: string;
-  name: string;
-  hasChanges: boolean;
-}
+import websiteApi, { TrackedWebsite } from './api'; // Import the API service
 
 // SiteCard Component
 const SiteCard: React.FC<{
-  site: SiteData;
-  onNameChange: (id: string, name: string) => void;
-  onUrlChange: (id: string, url: string) => void;
+  site: TrackedWebsite;
+  onNameChange: (id: number, name: string) => void;
+  onUrlChange: (id: number, url: string) => void;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }> = ({ site, onNameChange, onUrlChange, onMouseEnter, onMouseLeave }) => {
@@ -29,7 +22,7 @@ const SiteCard: React.FC<{
         </label>
         <input
           type="text"
-          value={site.name}
+          value={site.name || ''}
           onChange={(e) => onNameChange(site.id, e.target.value)}
           className="w-full px-3 py-2 bg-gray-800 border border-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
@@ -62,7 +55,7 @@ const SiteCard: React.FC<{
 };
 
 // SiteDetail Component
-const SiteDetail: React.FC<{ site: SiteData | null }> = ({ site }) => {
+const SiteDetail: React.FC<{ site: TrackedWebsite | null }> = ({ site }) => {
   if (!site) {
     return (
       <div className="text-center p-6">
@@ -86,6 +79,12 @@ const SiteDetail: React.FC<{ site: SiteData | null }> = ({ site }) => {
             {site.url}
           </a>
         </div>
+        <div className="mb-4">
+          <p className="text-gray-700 font-medium">Last Checked:</p>
+          <p className="text-gray-600">
+            {new Date(site.lastChecked).toLocaleString()}
+          </p>
+        </div>
         <div className="flex items-center">
           <Flag
             color={site.hasChanges ? "red" : "gray"}
@@ -103,48 +102,54 @@ const SiteDetail: React.FC<{ site: SiteData | null }> = ({ site }) => {
 
 // Main App Component
 const App: React.FC = () => {
-  const [sites, setSites] = useState<SiteData[]>([]);
-  const [hoveredSite, setHoveredSite] = useState<SiteData | null>(null);
+  const [sites, setSites] = useState<TrackedWebsite[]>([]);
+  const [hoveredSite, setHoveredSite] = useState<TrackedWebsite | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Simulate fetching data from backend
+  // Fetch all websites on component mount
   useEffect(() => {
-    // This would be replaced with an actual API call
-    const fetchData = async () => {
-      // Simulated API response
-      const data: SiteData[] = [
-        { id: '1', url: 'https://example.com', name: 'Example Site', hasChanges: true },
-        { id: '2', url: 'https://test.com', name: 'Test Website', hasChanges: false },
-        { id: '3', url: 'https://mysite.org', name: 'My Organization', hasChanges: true },
-        { id: '4', url: 'https://blog.dev', name: 'Dev Blog', hasChanges: false },
-        { id: '5', url: 'https://docs.tech', name: 'Documentation', hasChanges: false },
-      ];
-      setSites(data);
+    const fetchSites = async () => {
+      try {
+        setLoading(true);
+        const data = await websiteApi.getAllWebsites();
+        setSites(data);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch websites:', err);
+        setError('Failed to load websites. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchData();
+    fetchSites();
   }, []);
 
-  const handleNameChange = (id: string, newName: string) => {
+  const handleNameChange = (id: number, newName: string) => {
     setSites(sites.map(site =>
       site.id === id ? { ...site, name: newName } : site
     ));
   };
 
-  const handleUrlChange = (id: string, newUrl: string) => {
+  const handleUrlChange = (id: number, newUrl: string) => {
     setSites(sites.map(site =>
       site.id === id ? { ...site, url: newUrl } : site
     ));
   };
 
-  const checkForChanges = () => {
-    // This would typically make an API call to check for changes
-    console.log("Checking for changes...");
-    // Simulate some sites changing
-    const updatedSites = sites.map(site => ({
-      ...site,
-      hasChanges: Math.random() > 0.5
-    }));
-    setSites(updatedSites);
+  const checkForChanges = async () => {
+    try {
+      setLoading(true);
+      const updatedSites = await websiteApi.checkForChanges();
+      setSites(updatedSites);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to check for changes:', err);
+      setError('Failed to check for changes. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -154,23 +159,41 @@ const App: React.FC = () => {
 
         <button
           onClick={checkForChanges}
-          className="mb-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+          disabled={loading}
+          className="mb-6 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Check for Changes
+          {loading ? 'Loading...' : 'Check for Changes'}
         </button>
 
-        <div className="space-y-2">
-          {sites.map(site => (
-            <SiteCard
-              key={site.id}
-              site={site}
-              onNameChange={handleNameChange}
-              onUrlChange={handleUrlChange}
-              onMouseEnter={() => setHoveredSite(site)}
-              onMouseLeave={() => setHoveredSite(null)}
-            />
-          ))}
-        </div>
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+
+        {loading && sites.length === 0 ? (
+          <div className="flex justify-center p-8">
+            <p className="text-white">Loading sites...</p>
+          </div>
+        ) : sites.length === 0 ? (
+          <div className="bg-gray-900 rounded-lg p-6 text-center">
+            <p className="text-white mb-2">No websites found</p>
+            <p className="text-gray-400 text-sm">Add a website to start monitoring</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {sites.map(site => (
+              <SiteCard
+                key={site.id}
+                site={site}
+                onNameChange={handleNameChange}
+                onUrlChange={handleUrlChange}
+                onMouseEnter={() => setHoveredSite(site)}
+                onMouseLeave={() => setHoveredSite(null)}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="w-1/2 flex items-center justify-center bg-gray-100">
